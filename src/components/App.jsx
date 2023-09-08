@@ -4,6 +4,7 @@ import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { Button } from "./Button/Button";
 import { fetchPhotoByQ } from "./api";
 import { Layout } from "./Layout";
+import { Loader } from "./Loader/Loader";
 
 export class App extends Component {
   state = {
@@ -74,6 +75,7 @@ export class App extends Component {
     return (
       <Layout>
         <Searchbar onSubmit={this.handleSubmit}/>
+        {this.state.loading && <Loader/>}
         {this.state.images.length > 0 &&  <ImageGallery images={this.state.images}/>}
         {this.state.images.length > 0 &&  <Button onClick={this.handleLoadMore}/>}
         
