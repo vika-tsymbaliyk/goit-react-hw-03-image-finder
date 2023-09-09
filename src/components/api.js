@@ -4,7 +4,7 @@ import axios from 'axios';
 const API_KEY = '38398823-58dfcc6099d652ecdba70c123';
 const apiAdress = 'https://pixabay.com/api/';
 
-const itemsPerPage = 12; 
+export const itemsPerPage = 12; 
 
 export async function fetchPhotoByQ(q, page)  {
     const config = {
@@ -20,7 +20,7 @@ export async function fetchPhotoByQ(q, page)  {
         per_page: itemsPerPage,
     }
    }
-    const response = await axios.get('', config);
-    console.log(response.data.hits);
-    return response.data.hits;
+    const {data} = await axios.get('', config);
+    console.log(data);
+    return data;
 }
