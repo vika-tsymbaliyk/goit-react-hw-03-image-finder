@@ -5,7 +5,6 @@ import { Button } from "./Button/Button";
 import { fetchPhotoByQ, itemsPerPage } from "./api";
 import { Layout } from "./Layout";
 import { Loader } from "./Loader/Loader";
-import { isVisible } from "@testing-library/user-event/dist/utils";
 
 export class App extends Component {
   state = {
@@ -15,6 +14,7 @@ export class App extends Component {
     loading: false,
     error: false,
     isVisible: false,
+    isEmpty: false,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -22,34 +22,39 @@ export class App extends Component {
       prevState.query !== this.state.query ||
       prevState.page !== this.state.page
     ) { this.fetchPhoto(this.state.query, this.state.page) }
-    
   }
 
   fetchPhoto = async(query, page)=>{
+    if (!query) {
+      return;
+    }
+    this.setState({ loading: true});
     try {
-      this.setState({ loading: true, error: false });
+      
       const {totalHits, hits} = await fetchPhotoByQ(query, page);
+      if (hits.length === 0) {
+        this.setState({ isEmpty: true });
+      }
       this.setState(prevState => 
         ({images: [...prevState.images, ...hits],
+          isVisible: page < Math.ceil(totalHits/itemsPerPage),
         }));
-      console.log(Math.ceil(totalHits/itemsPerPage));
-      if(Math.ceil(totalHits/itemsPerPage)){
-      this.setState({
-        isVisible:true,})
     } catch (error) {
-      this.setState({ error: true });
+      this.setState({ error: error.message })
     } finally {
       this.setState({ loading: false });
     }
   }
 
-  handleSubmit = async(evt) => {
+  handleSubmit = (evt) => {
     evt.preventDefault();
     const serchWord = evt.target.elements.query.value;
     this.setState({
       query: serchWord ,
       images: [],
       page: 1,
+      isEmpty: false,
+      error: null,
     });
   };
   
@@ -60,13 +65,20 @@ export class App extends Component {
   };
 
   render() {
-    console.log(this.state.images);
+    console.log(this.state.isVisible);
+    const { images, isVisible, isEmpty, loading, error } = this.state;
     return (
       <Layout>
         <Searchbar onSubmit={this.handleSubmit}/>
-        {this.state.loading && <Loader/>}
-        {this.state.images.length > 0 &&  <ImageGallery images={this.state.images}/>}
-        {this.isVisible &&  <Button onClick={this.handleLoadMore}/>}
+        {loading && <Loader/>}
+        {error && (
+          <p >❌ Something went wrong - {error}</p>
+        )}
+        {isEmpty && (
+          <p >Sorry. There are no images ... 😭</p>
+        )}
+        {images.length > 0 &&  <ImageGallery images={this.state.images}/>}
+        {isVisible &&  (<Button onClick={this.handleLoadMore}/>)}
         
         </Layout>
   
