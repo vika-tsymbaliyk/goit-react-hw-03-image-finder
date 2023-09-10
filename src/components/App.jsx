@@ -55,7 +55,7 @@ export class App extends Component {
 
   handleSubmit = (evt) => {
     evt.preventDefault();
-    const serchWord = evt.target.elements.query.value;
+    const serchWord = evt.target.elements.query.value.trim();
     this.setState({
       query: serchWord ,
       images: [],
