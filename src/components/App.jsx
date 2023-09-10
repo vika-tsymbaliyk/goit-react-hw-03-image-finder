@@ -65,25 +65,20 @@ export class App extends Component {
   };
 
   render() {
-    console.log(this.state.isVisible);
     const { images, isVisible, isEmpty, loading, error } = this.state;
+
     return (
       <Layout>
+
         <Searchbar onSubmit={this.handleSubmit}/>
-        {loading && <Loader/>}
-        {error && (
-          <p >❌ Something went wrong - {error}</p>
-        )}
-        {isEmpty && (
-          <p >Sorry. There are no images ... 😭</p>
-        )}
-        {images.length > 0 &&  <ImageGallery images={this.state.images}/>}
-        {isVisible &&  (<Button onClick={this.handleLoadMore}/>)}
         
+        {loading && <Loader/>}
+        {error && (<p >❌ Something went wrong - {error}</p>)}
+        {isEmpty && (<p >Sorry. There are no images ... 😭</p>)}
+        {images.length > 0 &&  <ImageGallery images={images}/>}
+        {isVisible &&  (<Button onClick={this.handleLoadMore}/>)}
+
         </Layout>
-  
-
-
     );
   }
 }

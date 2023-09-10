@@ -20,7 +20,11 @@ export async function fetchPhotoByQ(q, page)  {
         per_page: itemsPerPage,
     }
    }
+   try {
     const {data} = await axios.get('', config);
     console.log(data);
     return data;
+   } catch (error) {
+    console.log(error);
+   }
 }
