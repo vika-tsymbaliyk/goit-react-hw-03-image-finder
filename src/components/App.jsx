@@ -5,6 +5,8 @@ import { Button } from "./Button/Button";
 import { fetchPhotoByQ, itemsPerPage } from "./api";
 import { Layout } from "./Layout";
 import { Loader } from "./Loader/Loader";
+import { ModalWindow } from "./Modal/Modal";
+
 
 export class App extends Component {
   state = {
@@ -15,6 +17,11 @@ export class App extends Component {
     error: false,
     isVisible: false,
     isEmpty: false,
+    showModal: false,
+    modalImg: {
+      url:'',
+      alt:''
+    },
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -64,19 +71,37 @@ export class App extends Component {
     }));    
   };
 
+  handleOpenModal = ()=> {
+    this.setState({ showModal: true });
+  }
+  showLargeImg = (largeImageURL, tags)=>{
+    this.setState({ modalImg:{
+      url: largeImageURL,
+      alt: tags,
+    } });
+  }
+  
+  handleCloseModal = ()=> {
+    this.setState({ showModal: false });
+  }
+
   render() {
-    const { images, isVisible, isEmpty, loading, error } = this.state;
+    const { images, isVisible, isEmpty, loading, error, modalImg, showModal } = this.state;
 
     return (
       <Layout>
+        <ModalWindow isOpen={showModal} handleCloseModal={this.handleCloseModal} modalImg={modalImg}/>
 
         <Searchbar onSubmit={this.handleSubmit}/>
-        
+
         {loading && <Loader/>}
         {error && (<p >❌ Something went wrong - {error}</p>)}
         {isEmpty && (<p >Sorry. There are no images ... 😭</p>)}
-        {images.length > 0 &&  <ImageGallery images={images}/>}
+        {images.length > 0 &&  (<ImageGallery images={images} onClick={this.handleOpenModal}  onShowModalImg={this.showLargeImg}/>)}
         {isVisible &&  (<Button onClick={this.handleLoadMore}/>)}
+
+        
+
 
         </Layout>
     );
